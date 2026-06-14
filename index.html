@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Limpieza de Cocina</title>
+  <meta name="description" content="Aplicación para el control de limpieza de cocina">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+</head>
+<body class="bg-[#F6F4EF] text-[#1B2A4A] min-h-screen flex flex-col antialiased font-body">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-[#D6CDC0] sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="#dashboard" class="flex items-center gap-2.5" data-section="dashboard">
+          <div class="w-8 h-8 bg-[#1B2A4A] rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+            </svg>
+          </div>
+          <span class="text-lg font-bold text-[#1B2A4A]">Limpieza Cocina</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-1">
+          <a href="#dashboard" data-section="dashboard" class="nav-link px-3 py-2 text-sm font-medium text-[#8B7D6B] hover:text-[#C8733A] border-b-2 border-transparent transition-all duration-200 rounded-t-lg">
+            Dashboard
+          </a>
+          <a href="#calendar" data-section="calendar" class="nav-link px-3 py-2 text-sm font-medium text-[#8B7D6B] hover:text-[#C8733A] border-b-2 border-transparent transition-all duration-200 rounded-t-lg">
+            Calendario
+          </a>
+          <a href="#stats" data-section="stats" class="nav-link px-3 py-2 text-sm font-medium text-[#8B7D6B] hover:text-[#C8733A] border-b-2 border-transparent transition-all duration-200 rounded-t-lg">
+            Estadísticas
+          </a>
+        </div>
+
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-[#8B7D6B] hover:text-[#1B2A4A] hover:bg-[#F6F4EF] rounded-lg transition-colors" aria-label="Menú de navegación">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-[#D6CDC0]">
+      <div class="px-4 py-3 space-y-1">
+        <a href="#dashboard" data-section="dashboard" class="nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-[#8B7D6B] hover:bg-[#F6F4EF] hover:text-[#C8733A] transition-colors">
+          Dashboard
+        </a>
+        <a href="#calendar" data-section="calendar" class="nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-[#8B7D6B] hover:bg-[#F6F4EF] hover:text-[#C8733A] transition-colors">
+          Calendario
+        </a>
+        <a href="#stats" data-section="stats" class="nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-[#8B7D6B] hover:bg-[#F6F4EF] hover:text-[#C8733A] transition-colors">
+          Estadísticas
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+    <div id="section-dashboard" class="section">
+      <div id="dashboard-container"></div>
+    </div>
+
+    <div id="section-calendar" class="section hidden">
+      <div id="calendar-container"></div>
+    </div>
+
+    <div id="section-stats" class="section hidden">
+      <div id="stats-container"></div>
+    </div>
+
+  </main>
+
+  <!-- Legend Footer -->
+  <footer class="border-t border-[#D6CDC0] bg-white mt-auto">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <span class="text-sm text-[#8B7D6B] font-medium">Personas:</span>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+          <span class="text-sm text-[#8B7D6B]">Jhair</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          <span class="text-sm text-[#8B7D6B]">Andrea</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+          <span class="text-sm text-[#8B7D6B]">Maryuri</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-red-500"></span>
+          <span class="text-sm text-[#8B7D6B]">Erickson</span>
+        </div>
+      </div>
+      <p class="text-xs text-[#8B7D6B] text-center mt-3">
+        Los registros de limpieza son permanentes y no pueden modificarse ni eliminarse.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Registration Modal -->
+  <div id="registration-modal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 animate-modal" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Registrar Limpieza</h3>
+        <button id="modal-close" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors" aria-label="Cerrar">
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <p id="modal-date" class="text-gray-500 mb-6 capitalize"></p>
+      <div id="modal-people" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
