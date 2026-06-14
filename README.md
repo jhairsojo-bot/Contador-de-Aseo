@@ -76,6 +76,8 @@ export const PEOPLE = [
 
 **Importante:** `bg` debe ser una clase Tailwind preexistente (ej. `bg-blue-500`), no un valor arbitrario. Tailwind CDN no re-procesa clases añadidas dinámicamente por JS.
 
+**Importante:** La leyenda del footer en `index.html` (líneas 87–102) tiene los nombres y las clases `bg-*` escritos manualmente. Si cambias los nombres o colores en `constants.js`, también debes actualizar esas entradas en el footer para que coincidan.
+
 ## Reglas de uso
 
 - **Registros inmutables** — Una vez guardados no pueden editarse ni eliminarse desde la interfaz.
