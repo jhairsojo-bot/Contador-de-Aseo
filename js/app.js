@@ -11,7 +11,7 @@ function navigateTo(section) {
   });
 
   const sectionEl = document.getElementById(`section-${section}`);
-  const navLink = document.querySelector(`[data-section="${section}"]`);
+  const navLink = document.querySelector(`.nav-link[data-section="${section}"]`);
 
   if (sectionEl) {
     sectionEl.classList.remove('hidden');
