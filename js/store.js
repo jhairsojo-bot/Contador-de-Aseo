@@ -32,6 +32,9 @@ export function saveRecord(date, person, color, area) {
   if (!records[date]) {
     records[date] = [];
   }
+  if (area !== 'cocina' && records[date].some(r => r.area === area)) {
+    return false;
+  }
   records[date].push({ person, color, area });
   window.dispatchEvent(new CustomEvent('records-changed'));
   return true;

@@ -212,8 +212,6 @@ function renderPeopleStep(container, dateStr) {
 
 function renderAreaStep(container, dateStr, person) {
   const existing = getDayRecords(dateStr);
-  const personRecs = existing.filter(r => r.person === person.name);
-  const registeredAreas = personRecs.map(r => r.area);
 
   container.innerHTML = '';
 
@@ -239,7 +237,8 @@ function renderAreaStep(container, dateStr, person) {
   container.appendChild(personHeader);
 
   for (const area of AREAS) {
-    const isRegistered = area.id !== 'cocina' && registeredAreas.includes(area.id);
+    const registration = existing.find(r => r.area === area.id);
+    const isRegistered = area.id !== 'cocina' && registration;
     const btn = document.createElement('button');
     btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 transition-all duration-200 ${
       isRegistered ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
@@ -249,8 +248,8 @@ function renderAreaStep(container, dateStr, person) {
     btn.innerHTML = `
       <span class="text-2xl">${area.icon}</span>
       <div class="flex-1 text-left">
-        <span class="font-medium text-[#1B2A4A] dark:text-[#e9ecef]">${area.name}</span>
-        ${isRegistered ? '<span class="block text-xs text-[#8B7D6B] dark:text-[#909296]">Ya registrado</span>' : ''}
+        <span class="font-medium text-[#1B2A4A] dark:text-white">${area.name}</span>
+        ${isRegistered ? `<span class="block text-xs text-[#8B7D6B] dark:text-gray-300">Registrado por ${registration.person}</span>` : ''}
       </div>
       ${isRegistered ? `
         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
