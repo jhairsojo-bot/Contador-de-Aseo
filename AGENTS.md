@@ -17,11 +17,11 @@ npx serve .
 | Archivo | Rol |
 |---------|-----|
 | `index.html` | Entry point único, Tailwind CDN, secciones ocultas por clase `.section` |
-| `js/constants.js` | `PEOPLE[]` (4 personas con nombre, color hex, clase Tailwind) y `STORAGE_KEY` |
-| `js/store.js` | Capa de datos: localStorage, cross-tab sync via `storage` event + custom `records-changed` |
-| `js/calendar.js` | Grid mensual (lunes a domingo), modal de registro, navegación entre meses |
-| `js/dashboard.js` | Tarjetas resumen, barras de participación |
-| `js/stats.js` | Ranking, gráfico dona (conic-gradient), tabla mensual, historial |
+| `js/constants.js` | `PEOPLE[]` (4 personas con nombre, color hex, clase Tailwind) y `AREAS[]` (4 áreas de limpieza) |
+| `js/store.js` | Capa de datos: records en memoria, custom event `records-changed`, funciones de stats por persona y área |
+| `js/calendar.js` | Grid mensual (lunes a domingo), modal de registro en dos pasos (persona → área), navegación entre meses |
+| `js/dashboard.js` | Tarjetas resumen, barras de participación, ranking de áreas, distribución por persona |
+| `js/stats.js` | Ranking, gráfico dona (conic-gradient), ranking por área, tabla mensual, historial con columna de área |
 | `js/app.js` | Router SPA por hash (`#dashboard`, `#calendar`, `#stats`), inicialización |
 | `css/styles.css` | Animaciones calendar-cell, modal, scrollbar |
 | `planningGuide.md` | Documento de diseño con paleta, tipografías y decisiones visuales |
@@ -45,9 +45,9 @@ npx serve .
 
 ## Reglas clave
 
-- **Registros inmutables**: una vez guardados en localStorage no pueden editarse/eliminarse desde la UI.
 - **Solo hoy**: el día actual es la única celda clickeable del calendario. Fechas futuras bloqueadas (`opacity-30 cursor-not-allowed`). Fechas pasadas sin registro son inertes.
-- **Un registro por día**: `store.saveRecord()` retorna `false` si la fecha ya existe.
+- **Cocina múltiple**: la persona puede registrar Cocina múltiples veces al día. Sala, Baño y Otro solo una vez por persona al día.
+- **Sin persistencia**: los datos solo existen en memoria durante la sesión. Al recargar la página se pierden.
 
 ## Tailwind CDN
 
