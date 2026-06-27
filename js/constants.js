@@ -11,5 +11,3 @@ export const AREAS = [
   { id: 'bano', name: 'Baño', icon: '🚿' },
   { id: 'otro', name: 'Otro', icon: '📦' },
 ];
-
-export const STORAGE_KEY = 'kitchen-cleaning-records';
