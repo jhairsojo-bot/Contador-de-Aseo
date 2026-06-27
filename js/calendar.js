@@ -238,7 +238,7 @@ function renderAreaStep(container, dateStr, person) {
 
   for (const area of AREAS) {
     const registration = existing.find(r => r.area === area.id);
-    const isRegistered = area.id !== 'cocina' && registration;
+    const isRegistered = area.id !== 'cocina' && area.id !== 'otro' && registration;
     const btn = document.createElement('button');
     btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 transition-all duration-200 ${
       isRegistered ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'

@@ -46,7 +46,7 @@ npx serve .
 ## Reglas clave
 
 - **Solo hoy**: el día actual es la única celda clickeable del calendario. Fechas futuras bloqueadas (`opacity-30 cursor-not-allowed`). Fechas pasadas sin registro son inertes.
-- **Cocina múltiple**: cualquier persona puede registrar Cocina múltiples veces al día. Sala, Baño y Otro solo se permiten **una vez por día en total** (una vez que alguien registra un área, queda bloqueada para todos los demás ese día).
+- **Cocina múltiple**: cualquier persona puede registrar Cocina múltiples veces al día. Sala y Baño solo se permiten **una vez por día en total** (una vez que alguien registra un área, queda bloqueada para todos los demás ese día). **Otro** sigue la misma regla que Cocina: registro múltiple.
 - **Sin persistencia**: los datos solo existen en memoria durante la sesión. Al recargar la página se pierden.
 
 ## Tailwind CDN
