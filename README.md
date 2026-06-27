@@ -4,9 +4,9 @@ Control de limpieza de cocina compartido. Aplicación SPA en vanilla JS que perm
 
 ## Funcionalidades
 
-- **Dashboard** — Resumen visual con tarjetas por persona, indicadores de más/menos limpiezas, y barras de participación general.
-- **Calendario** — Grid mensual (lunes a domingo). Solo el día actual es seleccionable. Las fechas futuras aparecen bloqueadas y las pasadas sin registro son inertes. Cada día muestra puntos de colores según quién limpió.
-- **Estadísticas** — Ranking general con medallas, gráfico de dona (conic-gradient), tabla mensual e historial completo de registros.
+- **Dashboard** — Resumen visual con tarjetas por persona, indicadores de más/menos limpiezas, barras de participación general, ranking de áreas más limpiadas y distribución por persona y área.
+- **Calendario** — Grid mensual (lunes a domingo). Solo el día actual es seleccionable. Las fechas futuras aparecen bloqueadas y las pasadas sin registro son inertes. Registro en dos pasos: seleccionar persona y luego el área a limpiar. Cada día muestra puntos de colores según quién limpió y en qué área.
+- **Estadísticas** — Ranking general con medallas, gráfico de dona (conic-gradient), ranking por área con identificación del top limpiador, tabla mensual e historial completo de registros con columna de área.
 
 ## Sistema de diseño — «Añil y Lino»
 
@@ -25,7 +25,7 @@ Control de limpieza de cocina compartido. Aplicación SPA en vanilla JS que perm
 
 - **Zero frameworks** — JavaScript vanilla, sin React, Vue ni build tools.
 - **Tailwind CDN** — Utilidades CSS en runtime vía `cdn.tailwindcss.com`.
-- **localStorage** — Persistencia local con sincronización entre pestañas.
+- **Sin persistencia** — Los datos solo existen en memoria durante la sesión.
 - **Google Fonts** — DM Serif Display y DM Sans cargadas desde CDN.
 
 ## Servir localmente
@@ -48,8 +48,8 @@ Luego abre `http://localhost:8000` en el navegador.
 │   └── styles.css      Animaciones, variables CSS, clases de tipografía
 ├── js/
 │   ├── app.js          Router SPA por hash, inicialización
-│   ├── constants.js    PEOPLE[] (4 personas) y STORAGE_KEY
-│   ├── store.js        Capa de datos (localStorage, cross-tab sync)
+│   ├── constants.js    PEOPLE[] (4 personas) y AREAS[] (4 áreas de limpieza)
+│   ├── store.js        Capa de datos en memoria, custom events
 │   ├── calendar.js     Grid mensual, modal de registro
 │   ├── dashboard.js    Tarjetas resumen, barras de participación
 │   └── stats.js        Ranking, gráfico dona, tabla mensual, historial
@@ -57,7 +57,7 @@ Luego abre `http://localhost:8000` en el navegador.
 └── AGENTS.md           Convenciones y reglas del proyecto
 ```
 
-## Personalizar participantes
+## Personalizar participantes y áreas
 
 Para cambiar los nombres o colores de las personas, edita `js/constants.js`:
 
@@ -78,11 +78,27 @@ export const PEOPLE = [
 
 **Importante:** La leyenda del footer en `index.html` (líneas 87–102) tiene los nombres y las clases `bg-*` escritos manualmente. Si cambias los nombres o colores en `constants.js`, también debes actualizar esas entradas en el footer para que coincidan.
 
+Para agregar o quitar áreas de limpieza, edita `js/constants.js`:
+
+```js
+export const AREAS = [
+  { id: 'cocina', name: 'Cocina', icon: '🍳' },
+  { id: 'sala',   name: 'Sala',   icon: '🛋️' },
+  { id: 'bano',   name: 'Baño',   icon: '🚿' },
+  { id: 'otro',   name: 'Otro',   icon: '📦' },
+];
+```
+
+- `id` — Identificador único del área (usado internamente).
+- `name` — Nombre visible en la interfaz.
+- `icon` — Emoji representativo del área.
+
 ## Reglas de uso
 
 - **Registros inmutables** — Una vez guardados no pueden editarse ni eliminarse desde la interfaz.
 - **Solo hoy** — El día actual es la única celda clickeable del calendario.
-- **Un registro por persona por día** — Cada persona puede registrarse una vez por día.
+- **Cocina múltiple** — La persona puede registrar Cocina múltiples veces al día. Sala, Baño y Otro solo una vez por persona al día.
+- **Sin persistencia** — Los datos se pierden al recargar la página.
 
 ## Despliegue
 

@@ -7,6 +7,15 @@
   --cuero: #C8733A;
 }
 
+.dark {
+  --lino: #1a1b1e;
+  --superficie: #25262b;
+  --indigo: #e9ecef;
+  --piedra: #909296;
+  --hilo: #373a40;
+  --cuero: #C8733A;
+}
+
 .font-display {
   font-family: 'DM Serif Display', Georgia, serif;
 }
@@ -85,4 +94,12 @@ body {
   #registration-modal {
     display: none !important;
   }
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #373a40;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #909296;
 }

@@ -27,14 +27,14 @@ export function renderCalendar(container) {
   const header = document.createElement('div');
   header.className = 'flex items-center justify-between mb-6';
   header.innerHTML = `
-    <button id="prev-month" class="p-2 hover:bg-[#F6F4EF] rounded-lg transition-colors" aria-label="Mes anterior">
-      <svg class="w-5 h-5 text-[#8B7D6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="prev-month" class="p-2 hover:bg-[#F6F4EF] dark:hover:bg-[#2f2f32] rounded-lg transition-colors" aria-label="Mes anterior">
+      <svg class="w-5 h-5 text-[#8B7D6B] dark:text-[#909296]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
     </button>
-    <h2 class="text-xl font-display text-[#1B2A4A]">${getMonthName(currentMonth)} ${currentYear}</h2>
-    <button id="next-month" class="p-2 hover:bg-[#F6F4EF] rounded-lg transition-colors" aria-label="Mes siguiente">
-      <svg class="w-5 h-5 text-[#8B7D6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <h2 class="text-xl font-display text-[#1B2A4A] dark:text-[#e9ecef]">${getMonthName(currentMonth)} ${currentYear}</h2>
+    <button id="next-month" class="p-2 hover:bg-[#F6F4EF] dark:hover:bg-[#2f2f32] rounded-lg transition-colors" aria-label="Mes siguiente">
+      <svg class="w-5 h-5 text-[#8B7D6B] dark:text-[#909296]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
     </button>
@@ -46,7 +46,7 @@ export function renderCalendar(container) {
   labelsGrid.className = 'grid grid-cols-7 gap-1 mb-2';
   for (const label of dayLabels) {
     const div = document.createElement('div');
-    div.className = 'text-center text-xs font-medium text-[#8B7D6B] py-2';
+    div.className = 'text-center text-xs font-medium text-[#8B7D6B] dark:text-[#909296] py-2';
     div.textContent = label;
     labelsGrid.appendChild(div);
   }
@@ -72,7 +72,7 @@ export function renderCalendar(container) {
     const isFuture = dateStr > todayStr;
     const dayRecs = allRecords[dateStr] || [];
 
-    let classes = 'calendar-cell relative h-10 sm:h-14 md:h-20 rounded-lg border border-[#D6CDC0] flex flex-col items-center justify-center';
+    let classes = 'calendar-cell relative h-10 sm:h-14 md:h-20 rounded-lg border border-[#D6CDC0] dark:border-[#373a40] flex flex-col items-center justify-center';
 
     if (isToday) {
       classes += ' ring-2 ring-[#C8733A] ring-offset-2 cursor-pointer hover:scale-105';
@@ -87,7 +87,7 @@ export function renderCalendar(container) {
     cell.className = classes;
 
     const dayNum = document.createElement('span');
-    dayNum.className = 'text-sm sm:text-base font-medium text-[#1B2A4A]';
+    dayNum.className = 'text-sm sm:text-base font-medium text-[#1B2A4A] dark:text-[#e9ecef]';
     dayNum.textContent = day;
     cell.appendChild(dayNum);
 
@@ -109,7 +109,7 @@ export function renderCalendar(container) {
 
       if (remainder > 0) {
         const more = document.createElement('span');
-        more.className = 'text-[10px] text-[#8B7D6B] flex-shrink-0 ml-0.5 font-medium';
+        more.className = 'text-[10px] text-[#8B7D6B] dark:text-[#909296] flex-shrink-0 ml-0.5 font-medium';
         more.textContent = `+${remainder}`;
         dotRow.appendChild(more);
       }
@@ -183,7 +183,7 @@ function renderPeopleStep(container, dateStr) {
 
   for (const person of PEOPLE) {
     const btn = document.createElement('button');
-    btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 border-gray-200 transition-all duration-200 hover:shadow-md`;
+    btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 border-gray-200 dark:border-[#373a40] transition-all duration-200 hover:shadow-md`;
     btn.style.borderColor = '#e5e7eb';
 
     const personRecs = existing.filter(r => r.person === person.name);
@@ -192,9 +192,9 @@ function renderPeopleStep(container, dateStr) {
     btn.innerHTML = `
       <div class="flex flex-col items-center flex-shrink-0 w-10">
         <span class="w-10 h-10 rounded-full ${person.bg}"></span>
-        ${count > 0 ? `<span class="text-xs font-bold text-gray-500 mt-0.5">x${count}</span>` : ''}
+        ${count > 0 ? `<span class="text-xs font-bold text-gray-500 dark:text-[#909296] mt-0.5">x${count}</span>` : ''}
       </div>
-      <span class="text-lg font-medium text-gray-800">${person.name}</span>
+      <span class="text-lg font-medium text-gray-800 dark:text-[#e9ecef]">${person.name}</span>
     `;
 
     btn.addEventListener('mouseenter', () => {
@@ -218,7 +218,7 @@ function renderAreaStep(container, dateStr, person) {
   container.innerHTML = '';
 
   const backBtn = document.createElement('button');
-  backBtn.className = 'flex items-center gap-2 text-sm text-[#8B7D6B] hover:text-[#1B2A4A] mb-3 transition-colors';
+  backBtn.className = 'flex items-center gap-2 text-sm text-[#8B7D6B] dark:text-[#909296] hover:text-[#1B2A4A] dark:hover:text-[#e9ecef] mb-3 transition-colors';
   backBtn.innerHTML = `
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -231,10 +231,10 @@ function renderAreaStep(container, dateStr, person) {
   container.appendChild(backBtn);
 
   const personHeader = document.createElement('div');
-  personHeader.className = 'flex items-center gap-3 mb-4 pb-3 border-b border-gray-100';
+  personHeader.className = 'flex items-center gap-3 mb-4 pb-3 border-b border-gray-100 dark:border-[#373a40]';
   personHeader.innerHTML = `
     <span class="w-8 h-8 rounded-full ${person.bg}"></span>
-    <span class="font-semibold text-[#1B2A4A]">${person.name}</span>
+    <span class="font-semibold text-[#1B2A4A] dark:text-[#e9ecef]">${person.name}</span>
   `;
   container.appendChild(personHeader);
 
@@ -249,8 +249,8 @@ function renderAreaStep(container, dateStr, person) {
     btn.innerHTML = `
       <span class="text-2xl">${area.icon}</span>
       <div class="flex-1 text-left">
-        <span class="font-medium text-[#1B2A4A]">${area.name}</span>
-        ${isRegistered ? '<span class="block text-xs text-[#8B7D6B]">Ya registrado</span>' : ''}
+        <span class="font-medium text-[#1B2A4A] dark:text-[#e9ecef]">${area.name}</span>
+        ${isRegistered ? '<span class="block text-xs text-[#8B7D6B] dark:text-[#909296]">Ya registrado</span>' : ''}
       </div>
       ${isRegistered ? `
         <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
