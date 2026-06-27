@@ -1,4 +1,4 @@
-import { PEOPLE } from './constants.js';
+import { PEOPLE, AREAS } from './constants.js';
 import { getRecords, saveRecord, getDayRecords } from './store.js';
 
 let currentMonth = new Date().getMonth();
@@ -103,7 +103,7 @@ export function renderCalendar(container) {
         const dot = document.createElement('span');
         dot.className = 'w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full flex-shrink-0';
         dot.style.backgroundColor = rec.color;
-        dot.title = rec.person;
+        dot.title = `${rec.person} - ${rec.area}`;
         dotRow.appendChild(dot);
       }
 
@@ -167,15 +167,27 @@ function showRegistrationModal(dateStr) {
     day: 'numeric',
   });
 
-  const existing = getDayRecords(dateStr);
+  renderPeopleStep(buttonsContainer, dateStr);
 
-  buttonsContainer.innerHTML = '';
+  const overlayClick = (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  };
+  modal.addEventListener('click', overlayClick, { once: true });
+}
+
+function renderPeopleStep(container, dateStr) {
+  const existing = getDayRecords(dateStr);
+  container.innerHTML = '';
+
   for (const person of PEOPLE) {
     const btn = document.createElement('button');
     btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 border-gray-200 transition-all duration-200 hover:shadow-md`;
     btn.style.borderColor = '#e5e7eb';
 
-    const count = existing.filter(r => r.person === person.name).length;
+    const personRecs = existing.filter(r => r.person === person.name);
+    const count = personRecs.length;
 
     btn.innerHTML = `
       <div class="flex flex-col items-center flex-shrink-0 w-10">
@@ -192,20 +204,79 @@ function showRegistrationModal(dateStr) {
       btn.style.borderColor = '#e5e7eb';
     });
     btn.addEventListener('click', () => {
-      saveRecord(dateStr, person.name, person.color);
-      closeModal();
-      const calendarContainer = document.getElementById('calendar-container');
-      renderCalendar(calendarContainer);
+      renderAreaStep(container, dateStr, person);
     });
-    buttonsContainer.appendChild(btn);
+    container.appendChild(btn);
   }
+}
 
-  const overlayClick = (e) => {
-    if (e.target === modal) {
-      closeModal();
+function renderAreaStep(container, dateStr, person) {
+  const existing = getDayRecords(dateStr);
+  const personRecs = existing.filter(r => r.person === person.name);
+  const registeredAreas = personRecs.map(r => r.area);
+
+  container.innerHTML = '';
+
+  const backBtn = document.createElement('button');
+  backBtn.className = 'flex items-center gap-2 text-sm text-[#8B7D6B] hover:text-[#1B2A4A] mb-3 transition-colors';
+  backBtn.innerHTML = `
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Volver
+  `;
+  backBtn.addEventListener('click', () => {
+    renderPeopleStep(container, dateStr);
+  });
+  container.appendChild(backBtn);
+
+  const personHeader = document.createElement('div');
+  personHeader.className = 'flex items-center gap-3 mb-4 pb-3 border-b border-gray-100';
+  personHeader.innerHTML = `
+    <span class="w-8 h-8 rounded-full ${person.bg}"></span>
+    <span class="font-semibold text-[#1B2A4A]">${person.name}</span>
+  `;
+  container.appendChild(personHeader);
+
+  for (const area of AREAS) {
+    const isRegistered = area.id !== 'cocina' && registeredAreas.includes(area.id);
+    const btn = document.createElement('button');
+    btn.className = `flex items-center gap-3 w-full p-4 rounded-xl border-2 transition-all duration-200 ${
+      isRegistered ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'
+    }`;
+    btn.style.borderColor = isRegistered ? '#e5e7eb' : person.color + '40';
+
+    btn.innerHTML = `
+      <span class="text-2xl">${area.icon}</span>
+      <div class="flex-1 text-left">
+        <span class="font-medium text-[#1B2A4A]">${area.name}</span>
+        ${isRegistered ? '<span class="block text-xs text-[#8B7D6B]">Ya registrado</span>' : ''}
+      </div>
+      ${isRegistered ? `
+        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      ` : ''}
+    `;
+
+    if (!isRegistered) {
+      btn.addEventListener('mouseenter', () => {
+        btn.style.borderColor = person.color;
+        btn.style.backgroundColor = person.color + '10';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.borderColor = person.color + '40';
+        btn.style.backgroundColor = 'transparent';
+      });
+      btn.addEventListener('click', () => {
+        saveRecord(dateStr, person.name, person.color, area.id);
+        closeModal();
+        const calendarContainer = document.getElementById('calendar-container');
+        renderCalendar(calendarContainer);
+      });
     }
-  };
-  modal.addEventListener('click', overlayClick, { once: true });
+    container.appendChild(btn);
+  }
 }
 
 export function closeModal() {

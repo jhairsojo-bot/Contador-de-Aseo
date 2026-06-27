@@ -1,8 +1,10 @@
-import { PEOPLE } from './constants.js';
-import { getPersonStats } from './store.js';
+import { PEOPLE, AREAS } from './constants.js';
+import { getPersonStats, getAreaStats, getPersonAreaStats } from './store.js';
 
 export function renderDashboard(container) {
   const { stats, total } = getPersonStats();
+  const { stats: areaStats } = getAreaStats();
+  const personAreaStats = getPersonAreaStats();
 
   let maxPerson = '';
   let maxCount = -1;
@@ -32,6 +34,8 @@ export function renderDashboard(container) {
     `;
     return;
   }
+
+  const maxAreaCount = Math.max(...AREAS.map(a => areaStats[a.id]));
 
   container.innerHTML = `
     <div class="border-b border-[#D6CDC0] pb-3 mb-6">
@@ -75,7 +79,7 @@ export function renderDashboard(container) {
       </div>
     </div>
 
-    <div class="bg-white rounded-xl border border-[#D6CDC0] p-6">
+    <div class="bg-white rounded-xl border border-[#D6CDC0] p-6 mb-8">
       <h3 class="text-lg font-display text-[#1B2A4A] mb-4">Participación</h3>
       <div class="space-y-4">
         ${PEOPLE.map(p => {
@@ -88,6 +92,62 @@ export function renderDashboard(container) {
               </div>
               <div class="w-full bg-[#EBE5DC] rounded-full h-3 overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${pct}%; background-color: ${p.color}"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-[#D6CDC0] p-6 mb-8">
+      <h3 class="text-lg font-display text-[#1B2A4A] mb-4">Áreas Más Limpiadas</h3>
+      <div class="space-y-4">
+        ${AREAS.map(a => {
+          const pct = total > 0 ? ((areaStats[a.id] / total) * 100).toFixed(1) : 0;
+          const barWidth = maxAreaCount > 0 ? (areaStats[a.id] / maxAreaCount) * 100 : 0;
+          return `
+            <div>
+              <div class="flex justify-between text-sm mb-1.5">
+                <span class="font-medium text-[#1B2A4A]">${a.icon} ${a.name}</span>
+                <span class="text-[#8B7D6B]">${areaStats[a.id]} (${pct}%)</span>
+              </div>
+              <div class="w-full bg-[#EBE5DC] rounded-full h-3 overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-700 ease-out bg-[#1B2A4A]" style="width: ${barWidth}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-[#D6CDC0] p-6">
+      <h3 class="text-lg font-display text-[#1B2A4A] mb-4">Distribución por Persona</h3>
+      <div class="space-y-6">
+        ${PEOPLE.map(p => {
+          const personTotal = stats[p.name];
+          return `
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
+                <span class="font-medium text-[#1B2A4A]">${p.name}</span>
+                <span class="text-sm text-[#8B7D6B]">(${personTotal} total)</span>
+              </div>
+              <div class="space-y-2 ml-5">
+                ${AREAS.map(a => {
+                  const count = personAreaStats[p.name][a.id];
+                  const pctPerson = personTotal > 0 ? ((count / personTotal) * 100).toFixed(1) : 0;
+                  return `
+                    <div>
+                      <div class="flex justify-between text-xs mb-1">
+                        <span class="text-[#8B7D6B]">${a.icon} ${a.name}</span>
+                        <span class="text-[#8B7D6B]">${count} (${pctPerson}%)</span>
+                      </div>
+                      <div class="w-full bg-[#EBE5DC] rounded-full h-2 overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-700 ease-out" style="width: ${pctPerson}%; background-color: ${p.color}"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
               </div>
             </div>
           `;

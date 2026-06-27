@@ -1,5 +1,5 @@
-import { PEOPLE } from './constants.js';
-import { getPersonStats, getSortedRecords, getAllMonths, getMonthlyStats } from './store.js';
+import { PEOPLE, AREAS } from './constants.js';
+import { getPersonStats, getAreaStats, getPersonAreaStats, getSortedRecords, getAllMonths, getMonthlyStats } from './store.js';
 
 function getConicGradient(stats, total) {
   if (total === 0) return 'conic-gradient(#e5e7eb 0deg, #e5e7eb 360deg)';
@@ -19,8 +19,20 @@ function getConicGradient(stats, total) {
   return `conic-gradient(${segments.join(', ')})`;
 }
 
+function getAreaIcon(areaId) {
+  const area = AREAS.find(a => a.id === areaId);
+  return area ? area.icon : '📦';
+}
+
+function getAreaName(areaId) {
+  const area = AREAS.find(a => a.id === areaId);
+  return area ? area.name : areaId;
+}
+
 export function renderStats(container) {
   const { stats, total } = getPersonStats();
+  const { stats: areaStats } = getAreaStats();
+  const personAreaStats = getPersonAreaStats();
   const records = getSortedRecords();
   const months = getAllMonths();
 
@@ -32,6 +44,13 @@ export function renderStats(container) {
   })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
   const maxCount = ranking.length > 0 ? ranking[0].count : 0;
+
+  const areaRanking = AREAS.map(a => ({
+    id: a.id,
+    name: a.name,
+    icon: a.icon,
+    count: areaStats[a.id],
+  })).sort((a, b) => b.count - a.count);
 
   container.innerHTML = `
     <div class="border-b border-[#D6CDC0] pb-3 mb-6">
@@ -49,7 +68,6 @@ export function renderStats(container) {
               const barWidth = maxCount > 0 ? (p.count / maxCount) * 100 : 0;
               const medals = ['🥇', '🥈', '🥉'];
               const rankIcon = i < 3 ? medals[i] : `<span class="w-6 h-6 rounded-full bg-[#EBE5DC] flex items-center justify-center text-xs font-bold text-[#8B7D6B]">${i + 1}</span>`;
-              const isTop3 = i < 3;
               return `
                 <div class="flex items-center gap-3 py-2">
                   <div class="w-8 flex-shrink-0 flex justify-center text-sm">
@@ -107,6 +125,39 @@ export function renderStats(container) {
     </div>
 
     <div class="bg-white rounded-xl border border-[#D6CDC0] p-6 mb-8">
+      <h3 class="text-lg font-display text-[#1B2A4A] mb-4">Ranking por Área</h3>
+      ${total === 0 ? `
+        <p class="text-[#8B7D6B] text-center py-8">No hay registros aún.</p>
+      ` : `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          ${areaRanking.map(a => {
+            const topPerson = PEOPLE.reduce((top, p) => {
+              const count = personAreaStats[p.name][a.id];
+              return count > top.count ? { name: p.name, color: p.color, count } : top;
+            }, { name: '', color: '', count: 0 });
+            const pct = total > 0 ? ((a.count / total) * 100).toFixed(1) : 0;
+            return `
+              <div class="border border-[#D6CDC0] rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">${a.icon}</span>
+                    <span class="font-medium text-[#1B2A4A]">${a.name}</span>
+                  </div>
+                  <span class="text-sm font-bold text-[#1B2A4A]">${a.count} <span class="text-[#8B7D6B] font-normal">(${pct}%)</span></span>
+                </div>
+                ${topPerson.name ? `
+                  <div class="text-xs text-[#8B7D6B]">
+                    Más limpia: <span class="font-semibold" style="color: ${topPerson.color}">${topPerson.name}</span> (${topPerson.count})
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    </div>
+
+    <div class="bg-white rounded-xl border border-[#D6CDC0] p-6 mb-8">
       <h3 class="text-lg font-display text-[#1B2A4A] mb-4">Estadísticas Mensuales</h3>
       ${months.length === 0 ? `
         <p class="text-[#8B7D6B] text-center py-8">No hay registros aún.</p>
@@ -156,6 +207,7 @@ export function renderStats(container) {
                 <th class="text-left py-3 px-4 font-medium text-[#8B7D6B]">Fecha</th>
                 <th class="text-left py-3 px-4 font-medium text-[#8B7D6B]">Día</th>
                 <th class="text-left py-3 px-4 font-medium text-[#8B7D6B]">Persona</th>
+                <th class="text-left py-3 px-4 font-medium text-[#8B7D6B]">Área</th>
               </tr>
             </thead>
             <tbody>
@@ -170,6 +222,11 @@ export function renderStats(container) {
                     <td class="py-3 px-4">
                       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium text-white" style="background-color: ${record.color}">
                         ${record.person}
+                      </span>
+                    </td>
+                    <td class="py-3 px-4">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[#F6F4EF] text-[#1B2A4A]">
+                        ${getAreaIcon(record.area)} ${getAreaName(record.area)}
                       </span>
                     </td>
                   </tr>

@@ -1,4 +1,4 @@
-import { STORAGE_KEY, PEOPLE } from './constants.js';
+import { PEOPLE, AREAS } from './constants.js';
 
 let records = {};
 
@@ -7,21 +7,20 @@ function normalizeRecords(raw) {
   for (const date in raw) {
     const val = raw[date];
     if (Array.isArray(val)) {
-      normalized[date] = val;
+      normalized[date] = val.map(r => ({
+        person: r.person,
+        color: r.color,
+        area: r.area || 'cocina',
+      }));
     } else {
-      normalized[date] = [{ person: val.person, color: val.color }];
+      normalized[date] = [{ person: val.person, color: val.color, area: val.area || 'cocina' }];
     }
   }
   return normalized;
 }
 
 export function loadRecords() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    records = data ? normalizeRecords(JSON.parse(data)) : {};
-  } catch {
-    records = {};
-  }
+  records = {};
   return records;
 }
 
@@ -29,12 +28,11 @@ export function getRecords() {
   return records;
 }
 
-export function saveRecord(date, person, color) {
+export function saveRecord(date, person, color, area) {
   if (!records[date]) {
     records[date] = [];
   }
-  records[date].push({ person, color });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  records[date].push({ person, color, area });
   window.dispatchEvent(new CustomEvent('records-changed'));
   return true;
 }
@@ -60,11 +58,51 @@ export function getPersonStats() {
   return { stats, total };
 }
 
+export function getAreaStats() {
+  const stats = {};
+  for (const a of AREAS) {
+    stats[a.id] = 0;
+  }
+  let total = 0;
+  for (const date in records) {
+    for (const record of records[date]) {
+      if (stats[record.area] !== undefined) {
+        stats[record.area]++;
+        total++;
+      }
+    }
+  }
+  return { stats, total };
+}
+
+export function getPersonAreaStats() {
+  const result = {};
+  for (const p of PEOPLE) {
+    result[p.name] = {};
+    for (const a of AREAS) {
+      result[p.name][a.id] = 0;
+    }
+  }
+  for (const date in records) {
+    for (const record of records[date]) {
+      if (result[record.person] && result[record.person][record.area] !== undefined) {
+        result[record.person][record.area]++;
+      }
+    }
+  }
+  return result;
+}
+
 export function getMonthlyStats(year, month) {
   const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
   const monthly = {};
+  const monthlyByArea = {};
   for (const p of PEOPLE) {
     monthly[p.name] = 0;
+    monthlyByArea[p.name] = {};
+    for (const a of AREAS) {
+      monthlyByArea[p.name][a.id] = 0;
+    }
   }
   let total = 0;
   for (const date in records) {
@@ -72,12 +110,13 @@ export function getMonthlyStats(year, month) {
       for (const record of records[date]) {
         if (monthly[record.person] !== undefined) {
           monthly[record.person]++;
+          monthlyByArea[record.person][record.area]++;
           total++;
         }
       }
     }
   }
-  return { monthly, total };
+  return { monthly, monthlyByArea, total };
 }
 
 export function getAllMonths() {
@@ -99,9 +138,3 @@ export function getSortedRecords() {
   return result.sort(([a], [b]) => a.localeCompare(b));
 }
 
-window.addEventListener('storage', (e) => {
-  if (e.key === STORAGE_KEY) {
-    loadRecords();
-    window.dispatchEvent(new CustomEvent('records-changed'));
-  }
-});

@@ -5,4 +5,11 @@ export const PEOPLE = [
   { name: 'Erickson', color: '#EF4444', bg: 'bg-red-500' },
 ];
 
+export const AREAS = [
+  { id: 'cocina', name: 'Cocina', icon: '🍳' },
+  { id: 'sala', name: 'Sala', icon: '🛋️' },
+  { id: 'bano', name: 'Baño', icon: '🚿' },
+  { id: 'otro', name: 'Otro', icon: '📦' },
+];
+
 export const STORAGE_KEY = 'kitchen-cleaning-records';
