@@ -60,9 +60,16 @@ export function renderCalendar(container) {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const allRecords = getRecords();
 
-  for (let i = 0; i < startOffset; i++) {
-    const empty = document.createElement('div');
-    grid.appendChild(empty);
+  const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+  for (let i = startOffset - 1; i >= 0; i--) {
+    const day = daysInPrevMonth - i;
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell relative h-10 sm:h-14 md:h-20 rounded-lg border border-[#D6CDC0] dark:border-[#373a40] flex flex-col items-center justify-center opacity-40 cursor-default';
+    const dayNum = document.createElement('span');
+    dayNum.className = 'text-sm sm:text-base font-medium text-[#8B7D6B] dark:text-[#909296]';
+    dayNum.textContent = day;
+    cell.appendChild(dayNum);
+    grid.appendChild(cell);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
