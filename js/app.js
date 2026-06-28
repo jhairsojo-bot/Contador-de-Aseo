@@ -3,34 +3,68 @@ import { renderCalendar, closeModal } from './calendar.js';
 import { renderDashboard } from './dashboard.js';
 import { renderStats } from './stats.js';
 
-function initTheme() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
+let isSectionAnimating = false;
+let hasRenderedOnce = false;
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function getActiveSection() {
+  return document.querySelector('.section:not(.hidden)');
+}
+
+function animateSectionOut(section) {
+  return new Promise(resolve => {
+    if (!section || prefersReducedMotion()) {
+      resolve();
+      return;
+    }
+    section.classList.add('section-exit');
+    section.addEventListener('animationend', () => {
+      section.classList.remove('section-exit');
+      resolve();
+    }, { once: true });
+  });
+}
+
+function animateSectionIn(section) {
+  return new Promise(resolve => {
+    if (!section || prefersReducedMotion()) {
+      resolve();
+      return;
+    }
+    void section.offsetWidth;
+    section.classList.add('section-enter');
+    section.addEventListener('animationend', () => {
+      section.classList.remove('section-enter');
+      resolve();
+    }, { once: true });
+  });
+}
+
+function renderSection(section) {
+  const container = document.getElementById(`${section}-container`);
+  if (!container) return;
+  container.innerHTML = '';
+  switch (section) {
+    case 'dashboard': renderDashboard(container); break;
+    case 'calendar': renderCalendar(container); break;
+    case 'stats': renderStats(container); break;
   }
-  updateThemeIcon();
 }
 
-function toggleTheme() {
-  document.documentElement.classList.toggle('dark');
-  const isDark = document.documentElement.classList.contains('dark');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  updateThemeIcon();
-}
+async function navigateTo(section) {
+  if (isSectionAnimating) return;
+  isSectionAnimating = true;
 
-function updateThemeIcon() {
-  const isDark = document.documentElement.classList.contains('dark');
-  const sunIcon = document.getElementById('theme-icon-sun');
-  const moonIcon = document.getElementById('theme-icon-moon');
-  if (sunIcon && moonIcon) {
-    sunIcon.classList.toggle('hidden', !isDark);
-    moonIcon.classList.toggle('hidden', isDark);
+  const currentSection = getActiveSection();
+
+  if (hasRenderedOnce) {
+    await animateSectionOut(currentSection);
   }
-}
 
-function navigateTo(section) {
   document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
-
   document.querySelectorAll('.nav-link').forEach(el => {
     el.classList.remove('text-[#C8733A]', 'border-[#C8733A]');
   });
@@ -42,26 +76,23 @@ function navigateTo(section) {
     sectionEl.classList.remove('hidden');
   }
   if (navLink) {
-    navLink.classList.add('text-[#C8733A]');
-    navLink.classList.add('border-[#C8733A]');
+    navLink.classList.add('text-[#C8733A]', 'border-[#C8733A]');
   }
 
-  const container = document.getElementById(`${section}-container`);
-  if (!container) return;
+  renderSection(section);
 
-  container.innerHTML = '';
-
-  switch (section) {
-    case 'dashboard':
-      renderDashboard(container);
-      break;
-    case 'calendar':
-      renderCalendar(container);
-      break;
-    case 'stats':
-      renderStats(container);
-      break;
+  if (hasRenderedOnce) {
+    await animateSectionIn(sectionEl);
+  } else {
+    hasRenderedOnce = true;
   }
+
+  isSectionAnimating = false;
+}
+
+function reRenderCurrent() {
+  const hash = window.location.hash.replace('#', '') || 'dashboard';
+  renderSection(hash);
 }
 
 function handleHashChange() {
@@ -104,10 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-  window.addEventListener('records-changed', () => {
-    const hash = window.location.hash.replace('#', '') || 'dashboard';
-    navigateTo(hash);
-  });
+  window.addEventListener('records-changed', reRenderCurrent);
 
   window.addEventListener('hashchange', handleHashChange);
 
@@ -117,3 +145,28 @@ document.addEventListener('DOMContentLoaded', () => {
     handleHashChange();
   }
 });
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+  updateThemeIcon();
+}
+
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+  if (sunIcon && moonIcon) {
+    sunIcon.classList.toggle('hidden', !isDark);
+    moonIcon.classList.toggle('hidden', isDark);
+  }
+}

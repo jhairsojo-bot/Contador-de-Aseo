@@ -5,6 +5,43 @@ let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 const today = new Date();
 const todayStr = formatDate(today);
+let isAnimatingMonth = false;
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function animateMonthChange(container, direction) {
+  if (isAnimatingMonth) return;
+  const content = container.querySelector('.calendar-content');
+  if (!content || prefersReducedMotion()) {
+    if (direction === 'prev') {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    } else {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    }
+    renderCalendar(container);
+    return;
+  }
+  isAnimatingMonth = true;
+  const exitClass = direction === 'prev' ? 'calendar-exit-prev' : 'calendar-exit-next';
+  content.classList.add(exitClass);
+  function onExitEnd() {
+    content.removeEventListener('animationend', onExitEnd);
+    content.classList.remove(exitClass);
+    if (direction === 'prev') {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    } else {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    }
+    renderCalendar(container, direction);
+  }
+  content.addEventListener('animationend', onExitEnd);
+}
 
 function formatDate(date) {
   const y = date.getFullYear();
@@ -21,7 +58,7 @@ function getMonthName(month) {
   return names[month];
 }
 
-export function renderCalendar(container) {
+export function renderCalendar(container, animationDirection = null) {
   container.innerHTML = '';
 
   const header = document.createElement('div');
@@ -41,6 +78,14 @@ export function renderCalendar(container) {
   `;
   container.appendChild(header);
 
+  const content = document.createElement('div');
+  content.className = 'calendar-content calendar-transition';
+  if (animationDirection === 'next') {
+    content.classList.add('calendar-enter-next');
+  } else if (animationDirection === 'prev') {
+    content.classList.add('calendar-enter-prev');
+  }
+
   const dayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   const labelsGrid = document.createElement('div');
   labelsGrid.className = 'grid grid-cols-7 gap-1 mb-2';
@@ -50,7 +95,7 @@ export function renderCalendar(container) {
     div.textContent = label;
     labelsGrid.appendChild(div);
   }
-  container.appendChild(labelsGrid);
+  content.appendChild(labelsGrid);
 
   const grid = document.createElement('div');
   grid.className = 'grid grid-cols-7 gap-1';
@@ -131,15 +176,20 @@ export function renderCalendar(container) {
     grid.appendChild(cell);
   }
 
-  container.appendChild(grid);
+  content.appendChild(grid);
+  container.appendChild(content);
+
+  if (animationDirection) {
+    const enterClass = 'calendar-enter-' + animationDirection;
+    content.addEventListener('animationend', function onEnterEnd() {
+      content.removeEventListener('animationend', onEnterEnd);
+      content.classList.remove(enterClass);
+      isAnimatingMonth = false;
+    });
+  }
 
   document.getElementById('prev-month').addEventListener('click', () => {
-    currentMonth--;
-    if (currentMonth < 0) {
-      currentMonth = 11;
-      currentYear--;
-    }
-    renderCalendar(container);
+    animateMonthChange(container, 'prev');
   });
 
   document.getElementById('next-month').addEventListener('click', () => {
@@ -147,12 +197,7 @@ export function renderCalendar(container) {
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     if (nextDate > currentMonthStart) return;
-    currentMonth++;
-    if (currentMonth > 11) {
-      currentMonth = 0;
-      currentYear++;
-    }
-    renderCalendar(container);
+    animateMonthChange(container, 'next');
   });
 }
 

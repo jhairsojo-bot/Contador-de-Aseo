@@ -88,6 +88,79 @@ body {
   }
 }
 
+@keyframes calendarEnterNext {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes calendarEnterPrev {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes calendarExitNext {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-16px); }
+}
+
+@keyframes calendarExitPrev {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(16px); }
+}
+
+.calendar-transition {
+  will-change: opacity, transform;
+}
+
+.calendar-enter-next {
+  animation: calendarEnterNext 220ms ease-out;
+}
+
+.calendar-enter-prev {
+  animation: calendarEnterPrev 220ms ease-out;
+}
+
+.calendar-exit-next {
+  animation: calendarExitNext 180ms ease-in forwards;
+}
+
+.calendar-exit-prev {
+  animation: calendarExitPrev 180ms ease-in forwards;
+}
+
+@keyframes sectionEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sectionExit {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(6px); }
+}
+
+.section-transition {
+  will-change: opacity, transform;
+}
+
+.section-enter {
+  animation: sectionEnter 220ms ease-out;
+}
+
+.section-exit {
+  animation: sectionExit 170ms ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-enter-next,
+  .calendar-enter-prev,
+  .calendar-exit-next,
+  .calendar-exit-prev,
+  .section-enter,
+  .section-exit {
+    animation: none;
+  }
+}
+
 @media print {
   nav,
   footer,
