@@ -98,16 +98,16 @@ export function renderStats(container) {
           <p class="text-[#8B7D6B] dark:text-[#909296] text-center py-8">No hay registros aún.</p>
         ` : `
           <div class="flex flex-col items-center">
-            <div class="relative w-48 h-48 mb-6">
+            <div class="relative w-36 h-36 sm:w-48 sm:h-48 mb-6 donut-chart">
               <div class="w-full h-full rounded-full" style="background: ${getConicGradient(stats, total)}"></div>
-              <div class="absolute inset-6 bg-white dark:bg-[#25262b] rounded-full flex items-center justify-center shadow-inner transition-colors duration-300">
+              <div class="absolute inset-4 sm:inset-6 bg-white dark:bg-[#25262b] rounded-full flex items-center justify-center shadow-inner transition-colors duration-300 donut-inner">
                 <div class="text-center">
-                  <span class="text-3xl font-bold text-[#1B2A4A] dark:text-[#e9ecef] block">${total}</span>
+                  <span class="text-2xl sm:text-3xl font-bold text-[#1B2A4A] dark:text-[#e9ecef] block leading-none donut-total">${total}</span>
                   <span class="text-xs text-[#8B7D6B] dark:text-[#909296] uppercase tracking-wider">Total</span>
                 </div>
               </div>
             </div>
-            <div class="flex flex-wrap gap-5 justify-center">
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 justify-items-center">
               ${PEOPLE.map(p => {
                 const pct = total > 0 ? ((stats[p.name] / total) * 100).toFixed(1) : 0;
                 return `

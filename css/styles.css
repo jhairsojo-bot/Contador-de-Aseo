@@ -161,6 +161,19 @@ body {
   }
 }
 
+@media (max-width: 380px) {
+  .donut-chart {
+    width: 128px;
+    height: 128px;
+  }
+  .donut-inner {
+    inset: 12px;
+  }
+  .donut-total {
+    font-size: 1.25rem;
+  }
+}
+
 @media print {
   nav,
   footer,
